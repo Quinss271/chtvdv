@@ -1,0 +1,82 @@
+chat0=VPP.chats[0]
+chat1=VPP.chats[1]
+
+chat0.addEventListener(VPP.Chat.Event.MESSAGE_RECEIVED, "mybot", function(type, content) {
+switch(type) {
+
+case VPP.Chat.MessageType.TEXT:
+chat1.sendMessage(content);
+
+break;
+case VPP.Chat.MessageType.IMAGE:
+var img = new VPP.Image(content);
+img.onLoad = function() {
+var index_img = VPP.gallery.add(img);
+chat1.sendImage(index_img);
+}
+
+break;
+case VPP.Chat.MessageType.STICKER:
+
+chat1.sendSticker(content);
+break;
+
+};
+
+});
+
+chat1.addEventListener(VPP.Chat.Event.MESSAGE_RECEIVED, "mybot", function(type, content) {
+switch(type) {
+
+case VPP.Chat.MessageType.TEXT:
+chat0.sendMessage(content);
+break;
+case VPP.Chat.MessageType.IMAGE:
+var img = new VPP.Image(content);
+img.onLoad = function() {
+var index_img = VPP.gallery.add(img);
+chat0.sendImage(index_img);
+}
+
+break;
+case VPP.Chat.MessageType.STICKER:
+chat0.sendSticker(content);
+break;
+
+};
+
+});
+
+chat0.addEventListener(VPP.Chat.Event.CONNECTED, "mybot", function() {
+//VPP.chats[0].sendMessage("Привет!");
+});
+
+chat1.addEventListener(VPP.Chat.Event.CONNECTED, "mybot", function() {
+//VPP.chats[1].sendMessage("Привет!");
+});
+
+chat0.addEventListener(VPP.Chat.Event.USER_STARTED_TYPING, "mybot", function() {
+chat1.setStartedTyping();
+});
+
+chat0.addEventListener(VPP.Chat.Event.USER_FINISHED_TYPING, "mybot", function() {
+chat1.setFinishedTyping();
+});
+
+chat1.addEventListener(VPP.Chat.Event.USER_STARTED_TYPING, "mybot", function() {
+chat0.setStartedTyping();
+});
+
+chat1.addEventListener(VPP.Chat.Event.USER_FINISHED_TYPING, "mybot", function() {
+chat0.setFinishedTyping();
+});
+
+
+
+chat0.start();
+chat1.start();
+
+
+VPPScript.stop = function() {
+VPP.sharedStorage.removeUpdateListener("mybot");
+};
